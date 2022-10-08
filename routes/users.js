@@ -1,7 +1,8 @@
 import express from "express";
-import User from "../models/user";
 import jwt from "jsonwebtoken";
-import authMiddleware from "../middlewares/auth-middlewares";
+
+import User from "../models/user.js";
+// import authMiddleware from "../middlewares/auth-middlewares.js";
 
 const router = express.Router();
 
@@ -57,14 +58,14 @@ router.post("/login", async (req, res) => {
 /**
  * 로그인 토큰 검증
  */
-router.get("/users/me", authMiddleware, async (req, res) => {
-  const { user } = res.locals;
-  console.log(user);
-  res.send({
-    user: {
-      nickname: user.nickname,
-    },
-  });
-});
+// router.get("/users/me", authMiddleware, async (req, res) => {
+//   const { user } = res.locals;
+//   console.log(user);
+//   res.send({
+//     user: {
+//       nickname: user.nickname,
+//     },
+//   });
+// });
 
 export default router;

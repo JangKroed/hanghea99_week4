@@ -1,7 +1,8 @@
 import express from "express";
 import async from "async";
-import CommentModel from "../schemas/comment.js";
-import PostModel from "../schemas/post.js"
+
+import Comment from "../models/comment.js";
+import Post from "../models/post.js"
 
 const router = express.Router();
 

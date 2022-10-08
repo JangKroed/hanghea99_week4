@@ -3,14 +3,15 @@ import express from "express";
 import mongoose from "mongoose";
 import Joi from "joi";
 
-import indexRouter from "./routes/index.js";
+// import indexRouter from "./routes/index.js";
 
-import usersRouter from "./routes/users";
-import postsRouter from "./routes/posts";
-import commentsRouter from "./routes/comments";
+import usersRouter from "./routes/users.js";
+import postsRouter from "./routes/posts.js";
+import commentsRouter from "./routes/comments.js";
 
 // express
 const app = express();
+const router = express.Router();
 
 // middlewares
 app.use(express.json());
@@ -21,6 +22,7 @@ app.use(express.static("assets"));
 app.use([usersRouter]);
 app.use([postsRouter]);
 app.use([commentsRouter]);
+// app.use("/", indexRouter);
 
 router.get("/", (req, res) => {
   res.send("123");

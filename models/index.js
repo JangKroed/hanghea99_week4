@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
+// import mongoose from "mongoose";
 
 
-const IndexSchema = new mongoose.Schema({});
+// const IndexSchema = new mongoose.Schema({});
 
 
-export default mongoose.model("Index", IndexSchema);
+// export default mongoose.model("Index", IndexSchema);

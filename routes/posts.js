@@ -1,6 +1,7 @@
 import express from "express";
-import PostModel from "../schemas/post.js";
-import CommentModel from "../schemas/comment.js";
+
+import Post from "../models/post.js";
+import Comment from "../models/comment.js";
 
 
 const router = express.Router();
@@ -13,7 +14,6 @@ router.post("/posts", async (req, res) => {
   // userId랑 nickname은 토큰 디코드한 값을 넣어서 넣을까 말까
   const maxPostId = await Post.findOne().sort("-postId").exec();
   let postId = 1;
-
   if (maxPostId) postId = maxPostId.postId + 1;
 
   let likes = 0;
@@ -21,7 +21,7 @@ router.post("/posts", async (req, res) => {
   await Post.create({
     postId,
     // userId,
-    nickname,
+    // nickname,
     title,
     content,
     createdAt,
