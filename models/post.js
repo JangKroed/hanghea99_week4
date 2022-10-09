@@ -1,7 +1,9 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const PostSchema = new mongoose.Schema({
   postId: Number,
+  userId: Number,
+  nickname: String,
   title: String,
   content: String,
   createdAt: {
@@ -14,10 +16,5 @@ const PostSchema = new mongoose.Schema({
   },
   likes: Number,
 });
-// PostSchema.virtual("postId").get(function () {
-//   return this._id.toHexString();
-// });
-// PostSchema.set("toJSON", {
-//   virtuals: true,
-// });
-export default mongoose.model("Post", PostSchema);
+
+module.exports = mongoose.model("Post", PostSchema);
