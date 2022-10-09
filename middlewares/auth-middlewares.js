@@ -1,21 +1,21 @@
-import jwt from "jsonwebtoken";
-import User from "../models/user";
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 
-export default (req, res, next) => {
+module.exports = (req, res, next) => {
   const { authorization } = req.headers;
   const [tokenType, tokenValue] = authorization.split(" ");
 
   if (tokenType !== "Bearer") {
     res.status(401).send({
-      errorMessage: "로그인 후 사용하세요.",
+      errorMessage: "로그인이 필요한 기능입니다.",
     });
     return;
   }
 
   try {
     const { userId } = jwt.verify(tokenValue, "MySecretKey");
-
-    User.findById(userId)
+    console.log("auth", userId);
+    User.findOne({ userId: userId })
       .exec()
       .then((user) => {
         res.locals.user = user;
@@ -23,7 +23,7 @@ export default (req, res, next) => {
       });
   } catch (error) {
     res.status(401).send({
-      errorMessage: "로그인 후 사용하세요.",
+      errorMessage: "로그인이 필요한 기능입니다.",
     });
     return;
   }
