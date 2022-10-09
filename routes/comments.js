@@ -1,9 +1,11 @@
-import express from "express";
-import async from "async";
-
-import Comment from "../models/comment.js";
-import Post from "../models/post.js"
-
+// reqiures
+const express = require("express");
+const Comment = require("../models/comment");
+const Joi = require("joi");
+const authMiddleware = require("../middlewares/auth-middlewares");
 const router = express.Router();
 
-export default router;
+
+
+
+module.exports = router;
