@@ -23,8 +23,8 @@ router.post("/posts", authMiddleware, async (req, res) => {
       await postSchema.validateAsync(req.body);
     // 토큰 정보 받아오기
     const { user } = res.locals;
-    const maxPostId = await Post.findOne().sort("-postId").exec();
     // postId 초기화
+    const maxPostId = await Post.findOne().sort("-postId").exec();
     let postId = 1;
     // 내림차순해서 첫번째 값 + 1
     if (maxPostId) postId = maxPostId.postId + 1;
@@ -40,6 +40,7 @@ router.post("/posts", authMiddleware, async (req, res) => {
       updatedAt,
       likes,
     });
+
     res.send({ message: "게시글 작성에 성공하였습니다." });
   } catch (err) {
     res.status(400).send({ errorMessage: "게시글 작성에 실패하였습니다." });
@@ -101,9 +102,7 @@ const postPutSchema = Joi.object({
 router.put("/posts/:postId", authMiddleware, async (req, res, next) => {
   try {
     const { postId } = req.params;
-    const { title, content, updatedAt } = await postPutSchema.validateAsync(
-      req.body
-    );
+    const { title, content } = await postPutSchema.validateAsync(req.body);
     const { user } = res.locals;
     const post = await Post.findOne({ postId: postId });
     if (user.userId !== post.userId) {
@@ -112,7 +111,8 @@ router.put("/posts/:postId", authMiddleware, async (req, res, next) => {
         .send({ errorMessage: "로그인된 사용자와 게시자가 다릅니다." });
       return;
     }
-
+    // updatedAt초기화
+    let updatedAt = new Date();
     await post.updateOne({
       postId: postId,
       $set: { title, content, updatedAt },
