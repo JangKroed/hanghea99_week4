@@ -90,18 +90,26 @@ const userAuthSchema = Joi.object({
 router.post("/login", async (req, res) => {
   try {
     const { nickname, password } = await userAuthSchema.validateAsync(req.body);
+    const users = await User.findOne({ nickname, password }).exec();
 
-    const user = await User.findOne({ nickname, password }).exec();
-
-    if (!user) {
+    if (!users) {
       res.status(400).send({
         errorMessage: "닉네임 또는 패스워드를 확인해주세요.",
       });
       return;
     }
 
+    const { authorization } = req.headers;
+
+    if (authorization) {
+      res.status(401).send({
+        errorMessage: "이미 로그인이 되어있습니다.",
+      });
+      return;
+    }
+
     const token = jwt.sign(
-      { userId: user.userId, nickname: user.nickname },
+      { userId: users.userId, nickname: users.nickname },
       "MySecretKey"
     );
     res.send({
