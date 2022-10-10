@@ -1,6 +1,7 @@
 // reqiures
 const express = require("express");
 const Post = require("../models/post");
+// const Like = require("../models/like");
 const Joi = require("joi");
 const authMiddleware = require("../middlewares/auth-middlewares");
 const router = express.Router();
@@ -58,6 +59,9 @@ router.get("/posts", async (req, res, next) => {
       content: 0,
     });
 
+    // const likes = await Like.find();
+    // console.log(likes);
+
     res.json({
       data: posts,
     });
@@ -72,13 +76,19 @@ router.get("/posts", async (req, res, next) => {
 router.get("/posts/:postId", async (req, res, next) => {
   try {
     const { postId } = req.params;
-    const post = await Post.find().select({
+    // // like에서 한번 갖다쓸 목록을 미리 가져온다
+    // const posts = await Post.findOne({ postId: postId });
+    // // 해당 post의 like 갯수를 체크해서 update해준다
+    // const like = await Like.find({ postId: postId });
+    // const likes = like.length;
+    // await posts.updateOne({ postId: postId, $set: { likes } });
+    // // 최종적으로 변경된 데이터를 보여준다.
+    const post = await Post.find({ postId: postId }).select({
       _id: 0,
       __v: 0,
     });
-    const result = post.filter((post) => post.postId == postId);
 
-    res.json({ data: result });
+    res.json({ data: post });
   } catch (err) {
     res.status(400).send({ errorMessage: "요청에 실패하였습니다." });
   }
