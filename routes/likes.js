@@ -6,6 +6,30 @@ const authMiddleware = require("../middlewares/auth-middlewares");
 const router = express.Router();
 
 /**
+ * 좋아요 목록 조회
+ */
+router.get("/posts/like", authMiddleware, async (req, res, next) => {
+  try {
+    // 로그인 검증 + user의 Id값을 받아온다.
+    const { user } = res.locals;
+    // 유저가 좋아요를 누를 목록들을 받아온다.
+    const likes = await Like.find({ userId: user.userId });
+    // posts에서 해당 user가 좋아요 누른 목록만 가져오기위해 map을 써준다.
+    const likePostIds = likes.map((post) => post.postId);
+    // 최종적으로 posts로 가져올때 postId: [1,3,4,5] 식이 성립하므로 사용.
+    const posts = await Post.find({ postId: likePostIds }).select({
+      _id: 0,
+      __v: 0,
+      content: 0,
+    });
+
+    res.json({ data: posts });
+  } catch (err) {
+    res.status(400).send({ errorMessage: "요청에 실패하였습니다." });
+  }
+});
+
+/**
  * 좋아요 클릭
  */
 router.put("/posts/:postId/like", authMiddleware, async (req, res, next) => {
