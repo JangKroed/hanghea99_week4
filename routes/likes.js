@@ -31,6 +31,8 @@ router.get("/posts/like", authMiddleware, async (req, res, next) => {
 
 /**
  * 좋아요 클릭
+ * 
+ * put 요청시 바로 적용.
  */
 router.put("/posts/:postId/like", authMiddleware, async (req, res, next) => {
   try {
