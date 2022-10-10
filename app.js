@@ -16,18 +16,18 @@ const router = express.Router();
 
 // router
 const usersRouter = require("./routes/users");
+const likesRouter = require("./routes/likes");
 const postsRouter = require("./routes/posts");
 const commentsRouter = require("./routes/comments");
-const likesRouter = require("./routes/likes");
 
 // middlewares 첫줄 나중에 '/api 추가'
 app.use(express.urlencoded({ extended: false }), router);
 // app.use(express.static("assets"));
 app.use(express.json());
 app.use([usersRouter]);
+app.use([likesRouter]);
 app.use([postsRouter]);
 app.use([commentsRouter]);
-app.use([likesRouter]);
 router.get("/", (req, res) => {
   res.send({});
 });
