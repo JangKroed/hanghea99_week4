@@ -2,7 +2,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
 
-
 // db
 mongoose.connect("mongodb://localhost/week4", {
   useNewUrlParser: true,
@@ -19,14 +18,16 @@ const router = express.Router();
 const usersRouter = require("./routes/users");
 const postsRouter = require("./routes/posts");
 const commentsRouter = require("./routes/comments");
+const likesRouter = require("./routes/likes");
 
-// middlewares
+// middlewares 첫줄 나중에 '/api 추가'
 app.use(express.urlencoded({ extended: false }), router);
 // app.use(express.static("assets"));
 app.use(express.json());
 app.use([usersRouter]);
 app.use([postsRouter]);
 app.use([commentsRouter]);
+app.use([likesRouter]);
 router.get("/", (req, res) => {
   res.send({});
 });
