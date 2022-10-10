@@ -1,25 +1,27 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/user");
+const { User } = require("../models");
 
 module.exports = (req, res, next) => {
   try {
     const { authorization } = req.headers;
-    const [tokenType, tokenValue] = authorization.split(" ");
+    const [authType, authToken] = (authorization || "").split(" ");
 
-    if (tokenType !== "Bearer") {
+    if (!authToken || authType !== "Bearer") {
       res.status(401).send({
-        errorMessage: "로그인이 필요한 기능입니다.",
+        errorMessage: "로그인이 필요한 기능입니다.1",
       });
       return;
     }
-    const { userId } = jwt.verify(tokenValue, "MySecretKey");
+    const { userId } = jwt.verify(authToken, "MySecretKey");
     console.log("auth", userId);
-    User.findOne({ userId: userId })
-      .exec()
-      .then((user) => {
-        res.locals.user = user;
-        next();
-      });
+    User.findOne({
+      where: {
+        userId,
+      },
+    }).then((user) => {
+      res.locals.user = user;
+      next();
+    });
   } catch (error) {
     res.status(401).send({
       errorMessage: "로그인이 필요한 기능입니다.",

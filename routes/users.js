@@ -1,6 +1,7 @@
 // reqiures
 const express = require("express");
-const User = require("../models/user");
+const { Op } = require("sequelize");
+const { User } = require("../models");
 const Joi = require("joi");
 const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middlewares/auth-middlewares");
@@ -34,10 +35,6 @@ router.post("/signup", async (req, res) => {
     const { nickname, password, confirm } = await usersSchema.validateAsync(
       req.body
     );
-    const maxUserId = await User.findOne().sort("-userId").exec();
-    let userId = 1;
-
-    if (maxUserId) userId = maxUserId.userId + 1;
 
     if (password.includes(nickname) || nickname.includes(password)) {
       res.status(400).send({
@@ -53,7 +50,11 @@ router.post("/signup", async (req, res) => {
       return;
     }
 
-    const existUsers = await User.find({ nickname });
+    const existUsers = await User.findAll({
+      where: {
+        nickname,
+      },
+    });
 
     if (existUsers.length) {
       res.status(400).send({
@@ -62,8 +63,7 @@ router.post("/signup", async (req, res) => {
       return;
     }
 
-    const user = new User({ userId, nickname, password });
-    await user.save();
+    await User.create({ nickname, password });
 
     res.status(201).send({
       message: "회원 가입에 성공하였습니다.",
@@ -90,7 +90,12 @@ const userAuthSchema = Joi.object({
 router.post("/login", async (req, res) => {
   try {
     const { nickname, password } = await userAuthSchema.validateAsync(req.body);
-    const users = await User.findOne({ nickname, password }).exec();
+    const users = await User.findOne({
+      where: {
+        nickname,
+        password,
+      },
+    });
 
     if (!users) {
       res.status(400).send({
