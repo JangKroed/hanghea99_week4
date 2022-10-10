@@ -53,6 +53,7 @@ router.put("/posts/:postId/like", authMiddleware, async (req, res, next) => {
         postId: posts.postId,
         userId: user.userId,
       });
+      await Post.updateOne({ postId: postId }, { $inc: { likes: 1 } });
       res.send({ message: "게시글의 좋아요를 등록하였습니다" });
       return;
     }
@@ -60,9 +61,11 @@ router.put("/posts/:postId/like", authMiddleware, async (req, res, next) => {
     // userId를 서로 조회해서 일치하지 않으면 추가, 있으면 삭제
     if (user.userId !== likes.userId) {
       await Like.create({ postId: posts.postId, userId: user.userId });
+      await Post.updateOne({ postId: postId }, { $inc: { likes: 1 } });
       res.send({ message: "게시글의 좋아요를 등록하였습니다" });
     } else {
       await likes.deleteOne({ userId: user.userId });
+      await Post.updateOne({ postId: postId }, { $inc: { likes: -1 } });
       res.send({ message: "게시글의 좋아요를 취소하였습니다." });
     }
   } catch (err) {
