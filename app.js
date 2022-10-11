@@ -1,20 +1,11 @@
 // reqiures
 const express = require("express");
-const mongoose = require("mongoose");
-
-// db
-mongoose.connect("mongodb://localhost/week4", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error:"));
 
 // express
 const app = express();
 const router = express.Router();
 
-// router
+// routers
 const usersRouter = require("./routes/users");
 const likesRouter = require("./routes/likes");
 const postsRouter = require("./routes/posts");

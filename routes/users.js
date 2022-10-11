@@ -1,10 +1,9 @@
 // reqiures
 const express = require("express");
-const { Op } = require("sequelize");
 const { User } = require("../models");
 const Joi = require("joi");
 const jwt = require("jsonwebtoken");
-const authMiddleware = require("../middlewares/auth-middlewares");
+// const authMiddleware = require("../middlewares/auth-middlewares");
 const router = express.Router();
 
 /**

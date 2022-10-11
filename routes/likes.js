@@ -1,7 +1,6 @@
 // reqiures
 const express = require("express");
-const Like = require("../models/like");
-const Post = require("../models/post");
+const { Like, Post } = require("../models");
 const authMiddleware = require("../middlewares/auth-middlewares");
 const router = express.Router();
 
@@ -12,16 +11,15 @@ router.get("/posts/like", authMiddleware, async (req, res, next) => {
   try {
     // 로그인 검증 + user의 Id값을 받아온다.
     const { user } = res.locals;
-    // 유저가 좋아요를 누를 목록들을 받아온다.
-    const likes = await Like.find({ userId: user.userId });
+
+    // 유저가 좋아요를 누른 목록들을 받아온다.
+    const likes = await Like.findAll({ where: { userId: user.userId } });
+
     // posts에서 해당 user가 좋아요 누른 목록만 가져오기위해 map을 써준다.
     const likePostIds = likes.map((post) => post.postId);
+    
     // 최종적으로 posts로 가져올때 postId: [1,3,4,5] 식이 성립하므로 사용.
-    const posts = await Post.find({ postId: likePostIds }).select({
-      _id: 0,
-      __v: 0,
-      content: 0,
-    });
+    const posts = await Post.findAll({ where: { postId: likePostIds } });
 
     res.json({ data: posts });
   } catch (err) {
@@ -31,7 +29,7 @@ router.get("/posts/like", authMiddleware, async (req, res, next) => {
 
 /**
  * 좋아요 클릭
- * 
+ *
  * put 요청시 바로 적용.
  */
 router.put("/posts/:postId/like", authMiddleware, async (req, res, next) => {
@@ -43,31 +41,23 @@ router.put("/posts/:postId/like", authMiddleware, async (req, res, next) => {
     const { user } = res.locals;
 
     // 필요한 post의 postId와 like의 postId 조회를 위해 찾아준다.
-    const posts = await Post.findOne({ postId: postId });
-    let likes = await Like.find({ postId: postId });
-
+    const posts = await Post.findOne({ where: { postId } });
+    let likes = await Like.findAll({ where: { postId } });
+    
     // likes의 전체 목록을 불러오므로 일치하는 값으로 초기화
     [likes] = likes.filter((like) => like.userId === user.userId);
 
-    // 게시글 좋아요가 0인데 조회하면 undefined이 리턴되므로 바로넣어준다.
-    if (likes === undefined) {
+    // 해당 유저가 좋아요를 안눌렀다면 추가, 아니라면 삭제
+    if (!likes) {
       await Like.create({
         postId: posts.postId,
         userId: user.userId,
       });
-      await Post.updateOne({ postId: postId }, { $inc: { likes: 1 } });
-      res.send({ message: "게시글의 좋아요를 등록하였습니다" });
-      return;
-    }
-
-    // userId를 서로 조회해서 일치하지 않으면 추가, 있으면 삭제
-    if (user.userId !== likes.userId) {
-      await Like.create({ postId: posts.postId, userId: user.userId });
-      await Post.updateOne({ postId: postId }, { $inc: { likes: 1 } });
+      await Post.increment({ likes: 1 }, { where: { postId } });
       res.send({ message: "게시글의 좋아요를 등록하였습니다" });
     } else {
-      await likes.deleteOne({ userId: user.userId });
-      await Post.updateOne({ postId: postId }, { $inc: { likes: -1 } });
+      await likes.destroy({ where: { userId: user.userId } });
+      await Post.increment({ likes: -1 }, { where: { postId } });
       res.send({ message: "게시글의 좋아요를 취소하였습니다." });
     }
   } catch (err) {
@@ -76,7 +66,3 @@ router.put("/posts/:postId/like", authMiddleware, async (req, res, next) => {
 });
 
 module.exports = router;
-
-// let a = null;
-// if (a === null) a = 0;
-// console.log(a);

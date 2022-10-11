@@ -1,7 +1,7 @@
 // reqiures
 const express = require("express");
-const Comment = require("../models/comment");
-const Joi = require("joi");
+const { Comment } = require("../models");
+// const Joi = require("joi");
 const authMiddleware = require("../middlewares/auth-middlewares");
 const router = express.Router();
 
@@ -19,18 +19,16 @@ router.post("/comments/:postId", authMiddleware, async (req, res, next) => {
   try {
     // postId 파라미터 받아오기
     const { postId } = req.params;
+
     // body 정보 받아오기
-    const { comment, createdAt, updatedAt } = req.body;
+    const { comment } = req.body;
     // const { comment, createdAt, updatedAt } = await commentSchema.validateAsync(
     //   req.body
     // );
+
     // 토큰 정보 받아오기
     const { user } = res.locals;
-    // commentId 초기화
-    const maxCommentId = await Comment.findOne().sort("-commentId").exec();
-    let commentId = 1;
-    // 내림차순 첫번째 값 + 1
-    if (maxCommentId) commentId = maxCommentId.commentId + 1;
+
     // 댓글내용이 없을 시 에러 발생
     if (!comment.length) {
       res.status(400).send({ errorMessage: "댓글 내용을 입력해주세요." });
@@ -38,12 +36,9 @@ router.post("/comments/:postId", authMiddleware, async (req, res, next) => {
     }
     await Comment.create({
       postId,
-      commentId,
       userId: user.userId,
       nickname: user.nickname,
       comment,
-      createdAt,
-      updatedAt,
     });
     res.send({ message: "댓글을 작성하였습니다." });
   } catch (err) {
@@ -57,9 +52,10 @@ router.post("/comments/:postId", authMiddleware, async (req, res, next) => {
 router.get("/comments/:postId", async (req, res, next) => {
   try {
     const { postId } = req.params;
-    const comments = await Comment.find({ postId: postId }).select({
-      _id: 0,
-      __v: 0,
+    const comments = await Comment.findAll({
+      where: {
+        postId,
+      },
     });
 
     res.json({
@@ -79,7 +75,11 @@ router.put("/comments/:commentId", authMiddleware, async (req, res, next) => {
     const { user } = res.locals;
     const { comment } = req.body;
 
-    const comments = await Comment.findOne({ commentId: commentId });
+    const comments = await Comment.findOne({
+      where: {
+        commentId,
+      },
+    });
     if (user.userId !== comments.userId) {
       res
         .status(400)
@@ -92,11 +92,13 @@ router.put("/comments/:commentId", authMiddleware, async (req, res, next) => {
       return;
     }
 
-    let updatedAt = new Date();
-    await comments.updateOne({
-      commentId: commentId,
-      $set: { comment, updatedAt },
-    });
+    // let updatedAt = new Date(); // sql은 자동으로 업데이트 됨
+    await comments.update(
+      { comment },
+      {
+        where: { commentId },
+      }
+    );
 
     res.send({
       message: "댓글을 수정하였습니다.",
@@ -116,7 +118,11 @@ router.delete(
     try {
       const { commentId } = req.params;
       const { user } = res.locals;
-      const comments = await Comment.findOne({ commentId: commentId });
+      const comments = await Comment.findOne({
+        where: {
+          commentId,
+        },
+      });
       if (user.userId !== comments.userId) {
         res.status(400).send({
           errorMessage: "로그인된 사용자와 게시자와 다릅니다.",
@@ -124,7 +130,11 @@ router.delete(
         return;
       }
 
-      await comments.deleteOne({ commentId: commentId });
+      await comments.destroy({
+        where: {
+          commentId,
+        },
+      });
 
       res.send({ message: "댓글을 삭제하였습니다." });
     } catch (err) {

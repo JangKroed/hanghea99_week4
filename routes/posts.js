@@ -1,6 +1,5 @@
 // reqiures
 const express = require("express");
-const { Op } = require("sequelize");
 const { Post } = require("../models");
 const Joi = require("joi");
 const authMiddleware = require("../middlewares/auth-middlewares");
@@ -65,7 +64,7 @@ router.get("/posts/:postId", async (req, res, next) => {
   try {
     const { postId } = req.params;
 
-    const post = await Post.findAll({
+    const post = await Post.findOne({
       where: {
         postId,
       },
@@ -112,9 +111,9 @@ router.put("/posts/:postId", authMiddleware, async (req, res, next) => {
       return;
     }
     // updatedAt초기화
-    let updatedAt = new Date();
+    // let updatedAt = new Date(); // sql은 자동으로 업데이트 됨
     await post.update(
-      { title, content, updatedAt },
+      { title, content },
       {
         where: { postId },
       }

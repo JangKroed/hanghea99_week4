@@ -8,12 +8,12 @@ module.exports = (req, res, next) => {
 
     if (!authToken || authType !== "Bearer") {
       res.status(401).send({
-        errorMessage: "로그인이 필요한 기능입니다.1",
+        errorMessage: "로그인이 필요한 기능입니다.",
       });
       return;
     }
     const { userId } = jwt.verify(authToken, "MySecretKey");
-    console.log("auth", userId);
+    
     User.findOne({
       where: {
         userId,
