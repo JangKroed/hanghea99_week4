@@ -10,18 +10,22 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       postId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "Posts",
+          key: "postId",
+        },
+        onDelete: "cascade",
       },
       userId: {
-        type: Sequelize.INTEGER,
-      },
-      createdAt: {
+        type: Sequelize.DataTypes.INTEGER,
         allowNull: false,
-        type: Sequelize.DATE,
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
+        references: {
+          model: "Users",
+          key: "userId",
+        },
+        onDelete: "cascade",
       },
     });
   },

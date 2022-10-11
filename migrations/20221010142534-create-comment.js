@@ -10,24 +10,40 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       postId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "Posts",
+          key: "postId",
+        },
+        onDelete: "cascade",
       },
       userId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "Users",
+          key: "userId",
+        },
+        onDelete: "cascade",
       },
       nickname: {
-        type: Sequelize.STRING,
+        type: Sequelize.DataTypes.STRING,
+        allowNull: false,
       },
       comment: {
-        type: Sequelize.STRING,
+        type: Sequelize.DataTypes.STRING,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DataTypes.DATE,
+        defaultValue: Sequelize.DataTypes.NOW,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DataTypes.DATE,
+        defaultValue: Sequelize.DataTypes.NOW,
       },
     });
   },

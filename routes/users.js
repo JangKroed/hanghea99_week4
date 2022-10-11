@@ -37,7 +37,7 @@ router.post("/signup", async (req, res) => {
 
     if (password.includes(nickname) || nickname.includes(password)) {
       res.status(400).send({
-        errorMessage: "회원가입에 실패하였습니다.",
+        errorMessage: "회원 가입에 실패하였습니다.",
       });
       return;
     }
@@ -70,7 +70,7 @@ router.post("/signup", async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(400).send({
-      errorMessage: "요청한 데이터 형식이 올바르지 않습니다.",
+      errorMessage: "요청한 데이터 형식이 올바르지 않습니다.",err
     });
   }
 });
@@ -119,7 +119,7 @@ router.post("/login", async (req, res) => {
     res.send({
       token: token,
     });
-  } catch (err) {}
+  } catch (err) {res.status(400).send({});}
 });
 
 /**

@@ -1,6 +1,9 @@
 // reqiures
 const express = require("express");
 
+// Swagger
+const { swaggerUi, specs } = require("./swagger/swagger");
+
 // express
 const app = express();
 const router = express.Router();
@@ -19,9 +22,9 @@ app.use([usersRouter]);
 app.use([likesRouter]);
 app.use([postsRouter]);
 app.use([commentsRouter]);
-router.get("/", (req, res) => {
-  res.send({});
-});
+
+// Swagger
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // listen
 app.listen(8080, () => {
