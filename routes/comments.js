@@ -56,6 +56,7 @@ router.get("/comments/:postId", async (req, res, next) => {
       where: {
         postId,
       },
+      order: [["createdAt", "desc"]],
     });
 
     res.json({
