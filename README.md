@@ -1,4 +1,4 @@
-# Swagger 사용법
+# Swagger
 
 <http://3.35.229.128/api-docs>
 
