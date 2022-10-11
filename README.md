@@ -1,3 +1,8 @@
+# ERD
+![ERD](./img/drawSQL-export-2022-10-11_22_48.png)
+
+***
+
 # API
 |기능|METHOD|API URL|REQUEST|RESPONSE|
 |:-----:|------|-------|-------|--------|
@@ -14,8 +19,3 @@
 |댓글 삭제|DELETE|/comments/:commentId||{ "message" }|
 |좋아요 게시글 조회|GET|/posts/like||{ data: [{ postId, userId, nickname, title, createdAt, updatedAt, likes }] }|
 |게시글 좋아요|PUT|/posts/:postId/like||{ "message" }|
-
-***
-
-# ERD
-![ERD](./img/drawSQL-export-2022-10-11_22_48.png)
