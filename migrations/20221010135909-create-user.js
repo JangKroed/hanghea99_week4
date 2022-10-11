@@ -4,25 +4,19 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable("Users", {
       userId: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER,
+        allowNull: false, // NOT NULL, Null을 허용하지 않음
+        autoIncrement: true, // AUTO_INCREMENT
+        primaryKey: true, // PRIMARY KEY, 기본키
+        type: Sequelize.DataTypes.INTEGER,
       },
       nickname: {
-        type: Sequelize.STRING,
+        type: Sequelize.DataTypes.STRING,
+        allowNull: false,
       },
       password: {
-        type: Sequelize.STRING,
-      },
-      createdAt: {
+        type: Sequelize.DataTypes.STRING,
         allowNull: false,
-        type: Sequelize.DATE
       },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE
-      }
     });
   },
   async down(queryInterface, Sequelize) {
