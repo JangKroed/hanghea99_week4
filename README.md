@@ -2,7 +2,7 @@
 |기능|METHOD|API URL|REQUEST|RESPONSE|
 |:-----:|------|-------|-------|--------|
 |회원 가입|POST|/signup|{ nickname, password, confirm }|{ "message" }|
-|로그인|POST|/login|{ nickname, password }|{ "token":"..." }|
+|로그인|POST|/login|{ nickname, password }|{ "token" : "..." }|
 |게시글 작성|POST|/posts|{ title, content }|{ "message" }|
 |게시글 조회|GET|/posts||{ data: [{ postId, userId, nickname, title, createdAt, updatedAt, likes }] }|
 |게시글 상세 조회|GET|/posts/:postId||{ data: [{ postId, userId, nickname, title, content, createdAt, updatedAt, likes }] }|
