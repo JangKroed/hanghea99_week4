@@ -1,6 +1,6 @@
 // reqiures
 const express = require("express");
-const Post = require("../models/post");
+const { Post } = require("../models");
 const Joi = require("joi");
 const authMiddleware = require("../middlewares/auth-middlewares");
 const router = express.Router();
@@ -19,25 +19,16 @@ const postSchema = Joi.object({
 router.post("/posts", authMiddleware, async (req, res) => {
   try {
     // body 받아오기
-    const { title, content, createdAt, updatedAt } =
-      await postSchema.validateAsync(req.body);
+    const { title, content } = await postSchema.validateAsync(req.body);
     // 토큰 정보 받아오기
     const { user } = res.locals;
-    // postId 초기화
-    const maxPostId = await Post.findOne().sort("-postId").exec();
-    let postId = 1;
-    // 내림차순해서 첫번째 값 + 1
-    if (maxPostId) postId = maxPostId.postId + 1;
     // 좋아요 초기화
     let likes = 0;
     await Post.create({
-      postId,
       userId: user.userId,
       nickname: user.nickname,
       title,
       content,
-      createdAt,
-      updatedAt,
       likes,
     });
 
@@ -52,10 +43,10 @@ router.post("/posts", authMiddleware, async (req, res) => {
  */
 router.get("/posts", async (req, res, next) => {
   try {
-    const posts = await Post.find().select({
-      _id: 0,
-      __v: 0,
-      content: 0,
+    const posts = await Post.findAll({
+      attributes: {
+        exclude: ["content"],
+      },
     });
 
     res.json({
@@ -72,13 +63,14 @@ router.get("/posts", async (req, res, next) => {
 router.get("/posts/:postId", async (req, res, next) => {
   try {
     const { postId } = req.params;
-    const post = await Post.find().select({
-      _id: 0,
-      __v: 0,
-    });
-    const result = post.filter((post) => post.postId == postId);
 
-    res.json({ data: result });
+    const post = await Post.findOne({
+      where: {
+        postId,
+      },
+    });
+
+    res.json({ data: post });
   } catch (err) {
     res.status(400).send({ errorMessage: "요청에 실패하였습니다." });
   }
@@ -103,20 +95,29 @@ router.put("/posts/:postId", authMiddleware, async (req, res, next) => {
   try {
     const { postId } = req.params;
     const { title, content } = await postPutSchema.validateAsync(req.body);
+
     const { user } = res.locals;
-    const post = await Post.findOne({ postId: postId });
-    if (user.userId !== post.userId) {
+
+    const post = await Post.findOne({
+      where: {
+        postId,
+      },
+    });
+
+    if (user.userId !== post.dataValues.userId) {
       res
         .status(400)
         .send({ errorMessage: "로그인된 사용자와 게시자가 다릅니다." });
       return;
     }
     // updatedAt초기화
-    let updatedAt = new Date();
-    await post.updateOne({
-      postId: postId,
-      $set: { title, content, updatedAt },
-    });
+    // let updatedAt = new Date(); // sql은 자동으로 업데이트 됨
+    await post.update(
+      { title, content },
+      {
+        where: { postId },
+      }
+    );
 
     res.send({
       message: "게시글을 수정하였습니다.",
@@ -133,15 +134,23 @@ router.delete("/posts/:postId", authMiddleware, async (req, res, next) => {
   try {
     const { postId } = req.params;
     const { user } = res.locals;
-    const post = await Post.findOne({ postId: postId });
-    if (user.userId !== post.userId) {
+    const post = await Post.findOne({
+      where: {
+        postId,
+      },
+    });
+    if (user.userId !== post.dataValues.userId) {
       res
         .status(400)
         .send({ errorMessage: "로그인된 사용자와 게시자가 다릅니다." });
       return;
     }
 
-    await post.deleteOne({ postId: postId });
+    await post.destroy({
+      where: {
+        postId,
+      },
+    });
 
     res.send({ message: "게시글을 삭제하였습니다." });
   } catch (err) {

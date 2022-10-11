@@ -1,9 +1,9 @@
 // reqiures
 const express = require("express");
-const User = require("../models/user");
+const { User } = require("../models");
 const Joi = require("joi");
 const jwt = require("jsonwebtoken");
-const authMiddleware = require("../middlewares/auth-middlewares");
+// const authMiddleware = require("../middlewares/auth-middlewares");
 const router = express.Router();
 
 /**
@@ -34,10 +34,6 @@ router.post("/signup", async (req, res) => {
     const { nickname, password, confirm } = await usersSchema.validateAsync(
       req.body
     );
-    const maxUserId = await User.findOne().sort("-userId").exec();
-    let userId = 1;
-
-    if (maxUserId) userId = maxUserId.userId + 1;
 
     if (password.includes(nickname) || nickname.includes(password)) {
       res.status(400).send({
@@ -53,7 +49,11 @@ router.post("/signup", async (req, res) => {
       return;
     }
 
-    const existUsers = await User.find({ nickname });
+    const existUsers = await User.findAll({
+      where: {
+        nickname,
+      },
+    });
 
     if (existUsers.length) {
       res.status(400).send({
@@ -62,8 +62,7 @@ router.post("/signup", async (req, res) => {
       return;
     }
 
-    const user = new User({ userId, nickname, password });
-    await user.save();
+    await User.create({ nickname, password });
 
     res.status(201).send({
       message: "회원 가입에 성공하였습니다.",
@@ -90,18 +89,31 @@ const userAuthSchema = Joi.object({
 router.post("/login", async (req, res) => {
   try {
     const { nickname, password } = await userAuthSchema.validateAsync(req.body);
+    const users = await User.findOne({
+      where: {
+        nickname,
+        password,
+      },
+    });
 
-    const user = await User.findOne({ nickname, password }).exec();
-
-    if (!user) {
+    if (!users) {
       res.status(400).send({
         errorMessage: "닉네임 또는 패스워드를 확인해주세요.",
       });
       return;
     }
 
+    const { authorization } = req.headers;
+
+    if (authorization) {
+      res.status(401).send({
+        errorMessage: "이미 로그인이 되어있습니다.",
+      });
+      return;
+    }
+
     const token = jwt.sign(
-      { userId: user.userId, nickname: user.nickname },
+      { userId: users.userId, nickname: users.nickname },
       "MySecretKey"
     );
     res.send({

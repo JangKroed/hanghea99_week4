@@ -1,30 +1,22 @@
 // reqiures
 const express = require("express");
-const mongoose = require("mongoose");
-
-
-// db
-mongoose.connect("mongodb://localhost/week4", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error:"));
 
 // express
 const app = express();
 const router = express.Router();
 
-// router
+// routers
 const usersRouter = require("./routes/users");
+const likesRouter = require("./routes/likes");
 const postsRouter = require("./routes/posts");
 const commentsRouter = require("./routes/comments");
 
-// middlewares
+// middlewares 첫줄 나중에 '/api 추가'
 app.use(express.urlencoded({ extended: false }), router);
 // app.use(express.static("assets"));
 app.use(express.json());
 app.use([usersRouter]);
+app.use([likesRouter]);
 app.use([postsRouter]);
 app.use([commentsRouter]);
 router.get("/", (req, res) => {
