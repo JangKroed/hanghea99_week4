@@ -10,7 +10,7 @@
 |게시글 삭제|DELETE|/posts/:postId||{ "message" }|
 |댓글 생성|POST|/comments/:postId|{ comment }|{ "message" }|
 |댓글 목록 조회|GET|/comments/:postId||{ data: [{ commentId, userId, nickname, comment, createdAt, updatedAt }] }|
-|댓글 수정|PUT|/comments/:comments|{ comment }|{ "message" }|
-|댓글 삭제|DELETE|/comments/:comments||{ "message" }|
+|댓글 수정|PUT|/comments/:commentId|{ comment }|{ "message" }|
+|댓글 삭제|DELETE|/comments/:commentId||{ "message" }|
 |좋아요 게시글 조회|GET|/posts/like||{ data: [{ postId, userId, nickname, title, createdAt, updatedAt, likes }] }|
 |게시글 좋아요|PUT|/posts/:postId/like||{ "message" }|
