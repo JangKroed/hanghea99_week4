@@ -11,7 +11,7 @@ const options = {
       description:
         "프로젝트 설명 Node.js Swaager swagger-jsdoc 방식 RestFul API 클라이언트 UI",
     },
-    servers: [{url: "http://localhost:8080", // 요청 URL
+    servers: [{url: "http://3.35.229.128/", // 요청 URL
       },
     ],
   },
