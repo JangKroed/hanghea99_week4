@@ -1,8 +1,11 @@
 // reqiures
 const express = require("express");
 
-// Swagger
-const { swaggerUi, specs } = require("./swagger/swagger");
+// // Swagger
+// const { swaggerUi, specs } = require("./swagger/swagger");
+// const swaggerFile = require("./src/swagger/swagger-output.json");
+const swaggerUi = require("swagger-ui-express");
+const swaggerFile = require("./swagger-output");
 
 // express
 const app = express();
@@ -24,7 +27,8 @@ app.use([postsRouter]);
 app.use([commentsRouter]);
 
 // Swagger
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+// app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 // listen
 app.listen(8080, () => {
