@@ -4,7 +4,7 @@
 
 접속후 구현한 API대로 작동해 볼 수있다.<br/>
 
-[사용방법]:(https://jang-kroed.tistory.com/35)
+[사용방법](https://jang-kroed.tistory.com/35)
 
 
 
